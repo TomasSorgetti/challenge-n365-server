@@ -1,5 +1,6 @@
 const { user } = require("../db");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const { ADMIN_PASSWORD, ADMIN_EMAIL, SECRET } = process.env;
 
 //************************ Create User ************************//
@@ -31,9 +32,40 @@ const postUserController = async (email, password) => {
 };
 
 //************************ Login ************************//
+const loginController = async (email, password) => {
+  if (!email || !password) throw new Error("Fields are empty");
+
+  // verify if user exists
+  const userVerification = await user.findOne({ where: { email } });
+
+  if (!userVerification) throw new Error("user does not exist");
+
+  // verify if password is correct
+  const match = await bcrypt.compare(password, userVerification.password);
+  if (match) {
+    const token = jwt.sign(
+      { id: userVerification.id, role: userVerification.role },
+      SECRET,
+      {
+        expiresIn: "1y",
+      }
+    );
+    return token;
+  }
+  throw new Error("wrong password");
+};
 
 //************************ Get User ************************//
+const getUserController = async (id) => {
+  const res = await user.findOne({ where: { id, deleted: false } });
+  if (!res) return;
+  const { password, role, ...userWithoutSensitiveData } = res.toJSON();
+
+  return userWithoutSensitiveData;
+};
 
 module.exports = {
   postUserController,
+  loginController,
+  getUserController,
 };
