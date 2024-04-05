@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const routes = require("./routes/mainRouter");
 
 const app = express();
 
@@ -15,8 +16,6 @@ app.use(morgan("dev"));
 
 app.use(express.json());
 
-app.use("/", (req, res) => {
-  res.send("hola");
-});
+app.use("/", routes);
 
 module.exports = app;
