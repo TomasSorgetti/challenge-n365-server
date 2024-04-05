@@ -4,6 +4,7 @@ const { ADMIN_PASSWORD, ADMIN_EMAIL, SECRET } = process.env;
 
 //************************ Create User ************************//
 const postUserController = async (email, password) => {
+  if (!email || !password) throw new Error("Fields are empty");
   // verify if user exist
   const userfind = await user.findOne({ where: { email } });
   if (userfind) throw new Error("That mail is allready taken");
