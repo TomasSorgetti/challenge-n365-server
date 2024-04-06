@@ -89,9 +89,8 @@ const getAllPaymentsHandler = async (req, res) => {
 };
 
 const exportToExcelHandler = async (req, res) => {
-  const { id } = req.user;
   try {
-    const response = await exportToExcelController(id, res);
+    const response = await exportToExcelController(req, res);
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });

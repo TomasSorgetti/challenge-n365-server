@@ -89,14 +89,15 @@ const getAllPaymentsController = async (id, name, order, filter, page) => {
 
 //*************************** Excel Export ***************************/
 
-const exportToExcelController = async (id, res) => {
+const exportToExcelController = async (req, res) => {
+  const { id } = req.user;
   if (!id) {
     throw new Error("Unauthorized");
   }
+  console.log("hola", id);
+
   let workbook = new excelJS.Workbook();
-
   const sheet = workbook.addWorksheet("payments");
-
   sheet.columns = [
     { header: "amount", key: "amount", width: 35 },
     { header: "paymentType", key: "paymentType", width: 35 },
@@ -114,6 +115,7 @@ const exportToExcelController = async (id, res) => {
       paymentDate: payment.paymentDate,
     });
   });
+
   res.setHeader(
     "Content-Type",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
