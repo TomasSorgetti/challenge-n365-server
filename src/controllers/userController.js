@@ -58,9 +58,9 @@ const loginController = async (email, password) => {
 //************************ Get User ************************//
 const getUserController = async (id) => {
   const res = await user.findOne({ where: { id, deleted: false } });
-  if (!res) return;
+    if (!res) throw new Error("User not found");
+    
   const { password, role, ...userWithoutSensitiveData } = res.toJSON();
-
   return userWithoutSensitiveData;
 };
 
