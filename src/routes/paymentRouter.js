@@ -6,12 +6,10 @@ const {
   updatePaymentHandler,
   getPaymentHandler,
   getAllPaymentsHandler,
-  exportToExcelHandler,
 } = require("../handlers/paymentHandler");
 
 const paymentRouter = Router();
 
-paymentRouter.get("/exportToExcel", verifyAccessToken, exportToExcelHandler);
 
 paymentRouter.post("/", verifyAccessToken, postPaymentHandler);
 paymentRouter.delete("/:paymentId", verifyAccessToken, deletePaymentHandler);

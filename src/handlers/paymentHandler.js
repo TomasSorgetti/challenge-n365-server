@@ -4,7 +4,6 @@ const {
   updatePaymentController,
   getPaymentController,
   getAllPaymentsController,
-  exportToExcelController,
 } = require("../controllers/paymentController");
 
 //************************ Post Payment **************************/
@@ -62,6 +61,7 @@ const updatePaymentHandler = async (req, res) => {
 const getPaymentHandler = async (req, res) => {
   const { id } = req.user;
   const { paymentId } = req.params;
+
   try {
     const response = await getPaymentController(id, paymentId);
     res.status(200).json(response);
@@ -73,24 +73,16 @@ const getPaymentHandler = async (req, res) => {
 //************************ Get All Payments **************************/
 const getAllPaymentsHandler = async (req, res) => {
   const { id } = req.user;
-  const { name, order, filter, page } = req.query;
+  const { name, order, orderBy, filter, page } = req.query;
   try {
     const response = await getAllPaymentsController(
       id,
       name,
       order,
+      orderBy,
       filter,
       page
     );
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-const exportToExcelHandler = async (req, res) => {
-  try {
-    const response = await exportToExcelController(req, res);
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -103,5 +95,4 @@ module.exports = {
   updatePaymentHandler,
   getPaymentHandler,
   getAllPaymentsHandler,
-  exportToExcelHandler,
 };

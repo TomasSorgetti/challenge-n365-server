@@ -1,6 +1,5 @@
 const { payment, user } = require("../db");
-const excelJS = require("exceljs");
-const fs = require("fs");
+const { Op } = require("sequelize");
 
 //*********************** Post Payment ************************/
 const postPaymentController = async (
@@ -79,53 +78,33 @@ const getPaymentController = async (id, paymentId) => {
 };
 
 //*********************** Get All Payments ************************/
-const getAllPaymentsController = async (id, name, order, filter, page) => {
+const getAllPaymentsController = async (id, name, order, orderBy, filter, page) => {
   if (!id) throw new Error("unauthorized");
+  const size = 3;
+  const offset = (page - 1) * size;
 
-  const payments = await payment.findAll({ where: { userId: id } });
-  console.log(payments);
-  return payments;
-};
-
-//*************************** Excel Export ***************************/
-
-const exportToExcelController = async (req, res) => {
-  const { id } = req.user;
-  if (!id) {
-    throw new Error("Unauthorized");
-  }
-  console.log("hola", id);
-
-  let workbook = new excelJS.Workbook();
-  const sheet = workbook.addWorksheet("payments");
-  sheet.columns = [
-    { header: "amount", key: "amount", width: 35 },
-    { header: "paymentType", key: "paymentType", width: 35 },
-    { header: "addressee", key: "addressee", width: 35 },
-    { header: "paymentDate", key: "paymentDate", width: 35 },
-  ];
-
-  const payments = await payment.findAll({ where: { userId: id } });
-
-  payments.forEach((payment) => {
-    sheet.addRow({
-      amount: payment.amount,
-      paymentType: payment.paymentType,
-      addressee: payment.addressee,
-      paymentDate: payment.paymentDate,
-    });
+  const payments = await payment.findAll({
+    where: {
+      userId: id,
+      // addressee: { [Op.like]: name + "%" },
+    },
+    limit: size,
+    offset: offset,
+    order: [
+      [orderBy, order],
+    ],
   });
 
-  res.setHeader(
-    "Content-Type",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  );
-  res.setHeader(
-    "Content-Disposition",
-    "attachment; filename=payment_list.xlsx"
-  );
-  await workbook.xlsx.write(res);
-  res.end();
+  const totalCount = await payment.count({
+    where: {
+      userId: id,
+      // addressee: { [Op.like]: name + "%" },
+    },
+  });
+
+  const totalPages = Math.ceil(totalCount / size);
+
+  return { pages: totalPages, payments: payments };
 };
 
 module.exports = {
@@ -134,5 +113,4 @@ module.exports = {
   updatePaymentController,
   getPaymentController,
   getAllPaymentsController,
-  exportToExcelController,
 };
