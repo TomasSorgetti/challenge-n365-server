@@ -12,20 +12,23 @@ module.exports = (sequelize) => {
       },
       amount: {
         type: DataTypes.DECIMAL,
-        allowNull: true,
+        allowNull: false,
       },
       paymentType: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+        validate: {
+          isIn: [["check", "debit", "transfer", "credit"]],
+        },
       },
       addressee: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       paymentDate: {
         // type: DataTypes.DATE,
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
       },
     },
     {

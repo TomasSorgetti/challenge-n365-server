@@ -1,7 +1,6 @@
 const {
   postUserController,
   loginController,
-  getUserController,
 } = require("../controllers/userController");
 
 //************************ Create User ************************//
@@ -28,19 +27,8 @@ const loginHandler = async (req, res) => {
   }
 };
 
-//************************ Get User ************************//
-const getUserHandler = async (req, res) => {
-  const { id } = req.user;
-  try {
-    const response = await getUserController(id);
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
 
 module.exports = {
   postUserHandler,
   loginHandler,
-  getUserHandler,
 };

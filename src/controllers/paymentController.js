@@ -78,28 +78,47 @@ const getPaymentController = async (id, paymentId) => {
 };
 
 //*********************** Get All Payments ************************/
-const getAllPaymentsController = async (id, name, order, orderBy, filter, page) => {
+const getAllPaymentsController = async (
+  id,
+  name,
+  order,
+  orderBy,
+  filter,
+  minAmount,
+  maxAmount,
+  minDate,
+  maxDate,
+  page,
+  limit
+) => {
   if (!id) throw new Error("unauthorized");
-  const size = 3;
+  const size = limit || 7;
   const offset = (page - 1) * size;
 
-  const payments = await payment.findAll({
-    where: {
-      userId: id,
-      // addressee: { [Op.like]: name + "%" },
+  let whereClause = {
+    userId: id,
+    addressee: {
+      [Op.like]: name + "%",
     },
+  };
+  if (!minAmount) minAmount = 0;
+  if (maxAmount) whereClause.amount = { [Op.between]: [minAmount, maxAmount] };
+
+  if (minDate && maxDate)
+    whereClause.paymentDate = { [Op.between]: [minDate, maxDate] };
+
+  if (filter && ["check", "debit", "transfer", "credit"].includes(filter)) {
+    whereClause.paymentType = filter;
+  }
+
+  const payments = await payment.findAll({
+    where: whereClause,
     limit: size,
     offset: offset,
-    order: [
-      [orderBy, order],
-    ],
+    order: [[orderBy, order]],
   });
-
   const totalCount = await payment.count({
-    where: {
-      userId: id,
-      // addressee: { [Op.like]: name + "%" },
-    },
+    where: whereClause,
   });
 
   const totalPages = Math.ceil(totalCount / size);

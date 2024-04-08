@@ -73,7 +73,18 @@ const getPaymentHandler = async (req, res) => {
 //************************ Get All Payments **************************/
 const getAllPaymentsHandler = async (req, res) => {
   const { id } = req.user;
-  const { name, order, orderBy, filter, page } = req.query;
+  const {
+    name,
+    order,
+    orderBy,
+    filter,
+    page,
+    minAmount,
+    maxAmount,
+    minDate,
+    maxDate,
+    limit
+  } = req.query;
   try {
     const response = await getAllPaymentsController(
       id,
@@ -81,7 +92,12 @@ const getAllPaymentsHandler = async (req, res) => {
       order,
       orderBy,
       filter,
-      page
+      minAmount,
+      maxAmount,
+      minDate,
+      maxDate,
+      page,
+      limit
     );
     res.status(200).json(response);
   } catch (error) {

@@ -32,11 +32,10 @@ const exportToExcelController = async (req, res) => {
   );
   res.setHeader(
     "Content-Disposition",
-    "attachment; filename=payment_list.xlsx"
+    "attachment; filename=payment_list_blaze.xlsx"
   );
   await workbook.xlsx.write(res);
   res.end();
 };
-
 
 module.exports = { exportToExcelController };
