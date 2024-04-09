@@ -8,7 +8,7 @@ const postUserController = async (email, password) => {
   if (!email || !password) throw new Error("Fields are empty");
   // verify if user exist
   const userfind = await user.findOne({ where: { email } });
-  if (userfind) throw new Error("That mail is allready taken");
+  if (userfind) throw new Error("That mail is already taken");
   // verify if someone want to use admin credentials but are not valid
   if (ADMIN_EMAIL === email && ADMIN_PASSWORD !== password) {
     throw new Error("you cannot use that password for that email");
@@ -19,7 +19,7 @@ const postUserController = async (email, password) => {
     const token = jwt.sign({ id: response.id, role: response.role }, SECRET, {
       expiresIn: "1y",
     });
-    return token;
+    return { token: token };
   }
   // if not admin, create common user and return token to client
   else {
@@ -27,7 +27,7 @@ const postUserController = async (email, password) => {
     const token = jwt.sign({ id: response.id, role: response.role }, SECRET, {
       expiresIn: "1y",
     });
-    return token;
+    return { token: token };
   }
 };
 
@@ -50,7 +50,7 @@ const loginController = async (email, password) => {
         expiresIn: "1y",
       }
     );
-    return token;
+    return { token: token };
   }
   throw new Error("wrong password");
 };
