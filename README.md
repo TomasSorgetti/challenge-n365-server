@@ -1,3 +1,12 @@
+How to start
+
+Create in server folder a .env file with your credentials.
+
+Here is an example
+![image](https://github.com/TomasSorgetti/challenge-n365-server/assets/97346262/b34fd465-fe03-49cf-9545-bc36f39f4442)
+
+
+
 ![image](https://github.com/TomasSorgetti/challenge-n365-server/assets/97346262/807d7e3e-83ee-44c4-97e0-b7f6a3de8003)
 ![image](https://github.com/TomasSorgetti/challenge-n365-server/assets/97346262/4c6918e7-d140-4aa1-9a16-26ca8c82399a)
 
