@@ -21,12 +21,20 @@ const loginHandler = async (req, res) => {
 
   try {
     const response = await loginController(email, password);
-    res.status(200).json(response);
+
+    res
+      // .cookie("token", response.token, {
+      //   maxAge: 3600,
+      //   httpOnly: false,
+      //   secure: false,
+      //   sameSite: "lax",
+      // })
+      .status(200)
+      .json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
-
 
 module.exports = {
   postUserHandler,

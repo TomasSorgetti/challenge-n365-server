@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { ADMIN_PASSWORD, ADMIN_EMAIL, SECRET } = process.env;
 
+
 //************************ Create User ************************//
 const postUserController = async (email, password) => {
   if (!email || !password) throw new Error("Fields are empty");
@@ -23,7 +24,7 @@ const postUserController = async (email, password) => {
     const token = jwt.sign({ id: response.id, role: response.role }, SECRET, {
       expiresIn: "1y",
     });
-    return { token: token };
+    return { token: token }
   }
   else {
     const response = await user.create({ email, password });
