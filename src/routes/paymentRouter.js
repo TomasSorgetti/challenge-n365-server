@@ -1,5 +1,4 @@
 const { Router } = require("express");
-const { verifyAccessToken } = require("../middlewares/auth");
 const {
   postPaymentHandler,
   deletePaymentHandler,
@@ -10,11 +9,10 @@ const {
 
 const paymentRouter = Router();
 
-
-paymentRouter.post("/", verifyAccessToken, postPaymentHandler);
-paymentRouter.delete("/:paymentId", verifyAccessToken, deletePaymentHandler);
-paymentRouter.put("/:paymentId", verifyAccessToken, updatePaymentHandler);
-paymentRouter.get("/:paymentId", verifyAccessToken, getPaymentHandler);
-paymentRouter.get("/", verifyAccessToken, getAllPaymentsHandler);
+paymentRouter.post("/", postPaymentHandler);
+paymentRouter.delete("/:paymentId", deletePaymentHandler);
+paymentRouter.put("/:paymentId", updatePaymentHandler);
+paymentRouter.get("/:paymentId", getPaymentHandler);
+paymentRouter.get("/", getAllPaymentsHandler);
 
 module.exports = paymentRouter;
