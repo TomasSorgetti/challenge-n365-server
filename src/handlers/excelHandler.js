@@ -37,6 +37,19 @@ const getExcelHandler = async (req, res) => {
       { header: "paymentDate", key: "paymentDate", width: 35 },
     ];
 
+    //********* Header Styles ************/
+    sheet.eachRow({ includeEmpty: false }, function (row, rowNumber) {
+      row.eachCell({ includeEmpty: false }, function (cell, colNumber) {
+        if (rowNumber === 1) {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFF00" },
+          };
+        }
+      });
+    });
+
     response.forEach((payment) => {
       sheet.addRow({
         amount: payment.amount,
