@@ -29,7 +29,7 @@ describe("Create User Controller", () => {
       .post("/user")
       .send({ email: "", password: "" });
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe("Fields are empty");
+    expect(response.body.error).toBe("Empty fields");
   });
 });
 

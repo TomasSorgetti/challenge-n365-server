@@ -104,8 +104,14 @@ const getAllPaymentsController = async (
   if (!minAmount) minAmount = 0;
   if (maxAmount) whereClause.amount = { [Op.between]: [minAmount, maxAmount] };
 
-  if (minDate && maxDate)
-    whereClause.paymentDate = { [Op.between]: [minDate, maxDate] };
+  whereClause.paymentDate =
+    minDate && maxDate
+      ? { [Op.between]: [minDate, maxDate] }
+      : minDate
+      ? { [Op.gte]: minDate }
+      : maxDate
+      ? { [Op.lte]: maxDate }
+      : undefined;
 
   if (filter && ["check", "debit", "transfer", "credit"].includes(filter)) {
     whereClause.paymentType = filter;
