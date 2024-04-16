@@ -275,8 +275,8 @@ describe("Get All Payments", () => {
       .set("authorization", token)
       .query({
         name: "",
-        order: "",
-        orderBy: "",
+        order: "asc",
+        orderBy: "paymentDate",
         filter: "",
         page: 1,
         minAmount: 0,
