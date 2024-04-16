@@ -13,7 +13,8 @@ const getExcelList = async (
   minDate,
   maxDate
 ) => {
-
+  if (!orderBy) orderBy = "paymentDate";
+  if (!order) order = "asc";
 
   let whereClause = {
     userId: id,

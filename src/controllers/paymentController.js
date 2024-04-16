@@ -91,7 +91,8 @@ const getAllPaymentsController = async (
   limit
 ) => {
   if (!id) throw new Error("unauthorized");
-
+  if (!orderBy) orderBy = "paymentDate";
+  if (!order) order = "asc";
 
   const size = limit || 7;
   const offset = (page - 1) * size;
