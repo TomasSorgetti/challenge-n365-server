@@ -21,15 +21,14 @@ const postPaymentController = async (
       paymentType,
       addressee,
       paymentDate,
-        userId: searchUser.dataValues.id,
-      });
+      userId: searchUser.dataValues.id,
+    });
   }
 };
 
 //*********************** Delete Payment ************************/
 const deletePaymentController = async (id, paymentId) => {
   if (!id) throw new Error("unauthorized");
-  if (!paymentId) throw new Error("payment id missing");
 
   const searchPayment = await payment.findOne({
     where: { id: paymentId, userId: id },
@@ -92,6 +91,9 @@ const getAllPaymentsController = async (
   limit
 ) => {
   if (!id) throw new Error("unauthorized");
+  if (!orderBy) orderBy = "paymentDate";
+  if (!order) order = "asc";
+
   const size = limit || 7;
   const offset = (page - 1) * size;
 

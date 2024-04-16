@@ -23,6 +23,7 @@ afterAll(async () => {
   await user.destroy({ where: { email: "test@example.com" } });
 });
 
+//*************  POST Payment  **************/
 describe("Post Payment", () => {
   afterAll(async () => {
     await payment.destroy({ where: { addressee: "Testing" } });
@@ -66,6 +67,7 @@ describe("Post Payment", () => {
   });
 });
 
+//*************  PUT Payment  **************/
 describe("Update Payment", () => {
   let paymentId;
 
@@ -114,6 +116,18 @@ describe("Update Payment", () => {
     expect(response.body.error).toBe("fields missing");
   });
 
+  test("Should return error if no payment id", async () => {
+    const response = await request
+      .put(`/payments`)
+      .set("authorization", token)
+      .send({
+        amount: 800,
+        paymentType: "credit",
+        addressee: "Testing",
+        paymentDate: "2024-01-01",
+      });
+    expect(response.status).toBe(404);
+  });
   test("Should return error if invalid payment id", async () => {
     const response = await request
       .put(`/payments/9999999`)
@@ -140,5 +154,137 @@ describe("Update Payment", () => {
         paymentDate: "2024-01-01",
       });
     expect(response.status).toBe(403);
+  });
+});
+
+//*************  DELETE Payment  **************/
+describe("Delete Payment", () => {
+  let paymentId;
+
+  beforeAll(async () => {
+    const response = await request
+      .post("/payments")
+      .set("authorization", token)
+      .send({
+        amount: 300,
+        paymentType: "credit",
+        addressee: "Testing",
+        paymentDate: "2024-01-01",
+      });
+    paymentId = response.body.id;
+  });
+
+  test("Should return error if no payment id", async () => {
+    const response = await request
+      .delete(`/payments/`)
+      .set("authorization", token);
+
+    expect(response.status).toBe(404);
+  });
+
+  test("Should return error if invalid token", async () => {
+    const response = await request
+      .delete(`/payments/${paymentId}`)
+      .set("authorization", "something wrong");
+    expect(response.status).toBe(403);
+  });
+
+  test("Should Delete a Payment", async () => {
+    const response = await request
+      .delete(`/payments/${paymentId}`)
+      .set("authorization", token);
+    expect(response.status).toBe(204);
+  });
+});
+
+//*************  GET Payment By Id  **************/
+describe("Get Payment By Id", () => {
+  let paymentId;
+
+  beforeAll(async () => {
+    const response = await request
+      .post("/payments")
+      .set("authorization", token)
+      .send({
+        amount: 300,
+        paymentType: "credit",
+        addressee: "Testing",
+        paymentDate: "2024-01-01",
+      });
+    paymentId = response.body.id;
+  });
+
+  afterAll(async () => {
+    await payment.destroy({ where: { addressee: "Testing" } });
+  });
+
+  test("Should return error if no payment id", async () => {
+    const wrongId = "";
+    const response = await request
+      .get(`/payments/${wrongId}`)
+      .set("authorization", token);
+    expect(response.status).toBe(400);
+  });
+
+  test("Should return error if invalid token", async () => {
+    const response = await request
+      .get(`/payments/${paymentId}`)
+      .set("authorization", "something wrong");
+    expect(response.status).toBe(403);
+  });
+
+  test("Should Get the Payment", async () => {
+    const response = await request
+      .get(`/payments/${paymentId}`)
+      .set("authorization", token);
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+});
+
+//*************  GET All Payments  **************/
+describe("Get All Payments", () => {
+  beforeAll(async () => {
+    await request.post("/payments").set("authorization", token).send({
+      amount: 300,
+      paymentType: "credit",
+      addressee: "Testing",
+      paymentDate: "2024-01-01",
+    });
+  });
+
+  afterAll(async () => {
+    await payment.destroy({ where: { addressee: "Testing" } });
+  });
+
+  test("Should return error if no payment id", async () => {
+    const response = await request.get(`/payments`).set("authorization", token);
+    expect(response.status).toBe(400);
+  });
+
+  test("Should return error if invalid token", async () => {
+    const response = await request
+      .get(`/payments/`)
+      .set("authorization", "something wrong");
+    expect(response.status).toBe(403);
+  });
+
+  test("Should Get all the Payments", async () => {
+    const response = await request
+      .get(`/payments`)
+      .set("authorization", token)
+      .query({
+        name: "",
+        order: "",
+        orderBy: "",
+        filter: "",
+        page: 1,
+        minAmount: 0,
+        maxAmount: null,
+        minDate: "",
+        maxDate: "",
+      });
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
   });
 });
