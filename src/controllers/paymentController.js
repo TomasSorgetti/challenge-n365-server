@@ -21,8 +21,8 @@ const postPaymentController = async (
       paymentType,
       addressee,
       paymentDate,
-      userId: searchUser.dataValues.id,
-    });
+        userId: searchUser.dataValues.id,
+      });
   }
 };
 
