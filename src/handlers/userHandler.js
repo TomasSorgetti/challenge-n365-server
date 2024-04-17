@@ -1,42 +1,28 @@
+// controller
 const {
   postUserController,
   loginController,
 } = require("../controllers/userController");
 
+const catchedAsync = require("../utils/catchedAsync");
+const { response } = require("../utils/index");
+
 //************************ Create User ************************//
 const postUserHandler = async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    const response = await postUserController(email, password);
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  const payload = await postUserController(email, password);
+  response(res, 200, payload);
 };
 
 //************************ Login ************************//
 const loginHandler = async (req, res) => {
   const { email, password } = req.body;
-
-  try {
-    const response = await loginController(email, password);
-
-    res
-      // .cookie("token", response.token, {
-      //   maxAge: 3600,
-      //   httpOnly: false,
-      //   secure: false,
-      //   sameSite: "lax",
-      // })
-      .status(200)
-      .json(response);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  const payload = await loginController(email, password);
+  response(res, 200, payload);
 };
 
 module.exports = {
-  postUserHandler,
-  loginHandler,
+  postUserHandler: catchedAsync(postUserHandler),
+  loginHandler: catchedAsync(loginHandler),
 };

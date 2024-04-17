@@ -21,7 +21,7 @@ describe("Create User Controller", () => {
       .post("/user")
       .send({ email: "test@example.com", password: "password" });
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe("That mail is already taken");
+    expect(response.body.message).toBe("That mail is already taken");
   });
 
   test("return error in case email or password empty", async () => {
@@ -29,7 +29,7 @@ describe("Create User Controller", () => {
       .post("/user")
       .send({ email: "", password: "" });
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe("Empty fields");
+    expect(response.body.message).toBe("Empty fields");
   });
 });
 
@@ -54,8 +54,8 @@ describe("Login User Controller", () => {
     const response = await request
       .post("/user/login")
       .send({ email: "test@example.com", password: "password" });
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe("user does not exist");
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("user doesn't exist");
   });
 
   test("return error if password doesn't match", async () => {
@@ -67,6 +67,6 @@ describe("Login User Controller", () => {
       .post("/user/login")
       .send({ email: "test@example.com", password: "wrong-password" });
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe("wrong password");
+    expect(response.body.message).toBe("wrong password");
   });
 });
