@@ -5,36 +5,31 @@ const {
   getPaymentController,
   getAllPaymentsController,
 } = require("../controllers/paymentController");
+const catchedAsync = require("../utils/catchedAsync");
+const { response } = require("../utils/index");
 
 //************************ Post Payment **************************/
 const postPaymentHandler = async (req, res) => {
   const { id } = req.user;
   const { amount, paymentType, addressee, paymentDate } = req.body;
 
-  try {
-    const response = await postPaymentController(
-      id,
-      amount,
-      paymentType,
-      addressee,
-      paymentDate
-    );
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  const payload = await postPaymentController(
+    id,
+    amount,
+    paymentType,
+    addressee,
+    paymentDate
+  );
+  response(res, 200, payload);
 };
 
 //************************ Delete Payment **************************/
 const deletePaymentHandler = async (req, res) => {
   const { id } = req.user;
   const { paymentId } = req.params;
-  try {
-    await deletePaymentController(id, paymentId);
-    res.sendStatus(204);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+
+  const payload = await deletePaymentController(id, paymentId);
+  response(res, 204, payload);
 };
 
 //************************ Update Payment **************************/
@@ -42,19 +37,16 @@ const updatePaymentHandler = async (req, res) => {
   const { id } = req.user;
   const { paymentId } = req.params;
   const { amount, paymentType, addressee, paymentDate } = req.body;
-  try {
-    await updatePaymentController(
-      id,
-      paymentId,
-      amount,
-      paymentType,
-      addressee,
-      paymentDate
-    );
-    res.sendStatus(204);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+
+  const payload = await updatePaymentController(
+    id,
+    paymentId,
+    amount,
+    paymentType,
+    addressee,
+    paymentDate
+  );
+  response(res, 204, payload);
 };
 
 //************************ Get Payment **************************/
@@ -62,12 +54,8 @@ const getPaymentHandler = async (req, res) => {
   const { id } = req.user;
   const { paymentId } = req.params;
 
-  try {
-    const response = await getPaymentController(id, paymentId);
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  const response = await getPaymentController(id, paymentId);
+  res.status(200).json(response);
 };
 
 //************************ Get All Payments **************************/
@@ -83,32 +71,29 @@ const getAllPaymentsHandler = async (req, res) => {
     maxAmount,
     minDate,
     maxDate,
-    limit
+    limit,
   } = req.query;
-  try {
-    const response = await getAllPaymentsController(
-      id,
-      name,
-      order,
-      orderBy,
-      filter,
-      minAmount,
-      maxAmount,
-      minDate,
-      maxDate,
-      page,
-      limit
-    );
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  const payload = await getAllPaymentsController(
+    id,
+    name,
+    order,
+    orderBy,
+    filter,
+    minAmount,
+    maxAmount,
+    minDate,
+    maxDate,
+    page,
+    limit
+  );
+
+  response(res, 200, payload);
 };
 
 module.exports = {
-  postPaymentHandler,
-  deletePaymentHandler,
-  updatePaymentHandler,
-  getPaymentHandler,
-  getAllPaymentsHandler,
+  postPaymentHandler: catchedAsync(postPaymentHandler),
+  deletePaymentHandler: catchedAsync(deletePaymentHandler),
+  updatePaymentHandler: catchedAsync(updatePaymentHandler),
+  getPaymentHandler: catchedAsync(getPaymentHandler),
+  getAllPaymentsHandler: catchedAsync(getAllPaymentsHandler),
 };

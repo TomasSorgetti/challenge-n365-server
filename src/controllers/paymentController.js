@@ -1,6 +1,8 @@
 const { payment, user } = require("../db");
 const { Op } = require("sequelize");
 
+const { ClientErrors } = require("../utils/errors");
+
 //*********************** Post Payment ************************/
 const postPaymentController = async (
   id,
@@ -9,12 +11,13 @@ const postPaymentController = async (
   addressee,
   paymentDate
 ) => {
-  if (!id) throw new Error("unauthorized");
+  if (!id) throw new ClientErrors("unauthorized", 403);
   if (!amount || !paymentType || !addressee || !paymentDate)
-    throw new Error("fields empty");
+    throw new ClientErrors("fields empty", 400);
 
   const searchUser = await user.findOne({ where: { id } });
-  if (!searchUser) throw new Error("A user with that id do not exist");
+  if (!searchUser)
+    throw new ClientErrors("A user with that id doesn't exist", 403);
   else {
     return await payment.create({
       amount,
@@ -28,12 +31,13 @@ const postPaymentController = async (
 
 //*********************** Delete Payment ************************/
 const deletePaymentController = async (id, paymentId) => {
-  if (!id) throw new Error("unauthorized");
+  if (!id) throw new ClientErrors("unauthorized", 403);
 
   const searchPayment = await payment.findOne({
     where: { id: paymentId, userId: id },
   });
-  if (!searchPayment) throw new Error("do not find a payment with that id");
+  if (!searchPayment)
+    throw new ClientErrors("do not find a payment with that id", 404);
   return await searchPayment.destroy();
 };
 
@@ -46,14 +50,15 @@ const updatePaymentController = async (
   addressee,
   paymentDate
 ) => {
-  if (!id) throw new Error("unauthorized");
+  if (!id) throw new ClientErrors("unauthorized", 403);
   if (!paymentId || !amount || !paymentType || !addressee || !paymentDate)
-    throw new Error("fields missing");
+    throw new ClientErrors("fields missing", 400);
 
   const searchPayment = await payment.findOne({
     where: { id: paymentId, userId: id },
   });
-  if (!searchPayment) throw new Error("do not find a payment with that id");
+  if (!searchPayment)
+    throw new ClientErrors("do not find a payment with that id", 404);
 
   searchPayment.amount = amount || searchPayment.amount;
   searchPayment.paymentType = paymentType || searchPayment.paymentType;
@@ -66,13 +71,14 @@ const updatePaymentController = async (
 
 //*********************** Get Payment ************************/
 const getPaymentController = async (id, paymentId) => {
-  if (!id) throw new Error("unauthorized");
-  if (!paymentId) throw new Error("payment id missing");
+  if (!id) throw new ClientErrors("unauthorized", 403);
+  if (!paymentId) throw new ClientErrors("payment id missing", 400);
 
   const searchPayment = await payment.findOne({
     where: { id: paymentId, userId: id },
   });
-  if (!searchPayment) throw new Error("did not find a payment with that id");
+  if (!searchPayment)
+    throw new ClientErrors("did not find a payment with that id", 404);
   return searchPayment;
 };
 
@@ -90,7 +96,7 @@ const getAllPaymentsController = async (
   page,
   limit
 ) => {
-  if (!id) throw new Error("unauthorized");
+  if (!id) throw new ClientErrors("unauthorized", 403);
   if (!orderBy) orderBy = "paymentDate";
   if (!order) order = "asc";
 

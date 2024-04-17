@@ -18,7 +18,7 @@ app.use("/", routes);
 
 app.use((err, req, res, next) => {
   const { statusCode, message } = err;
-  res.status(statusCode || 500).json({ error: true, message });
+  res.status(statusCode || 400).json({ error: true, message });
 });
 
 module.exports = app;

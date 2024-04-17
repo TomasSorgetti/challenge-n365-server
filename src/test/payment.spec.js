@@ -13,10 +13,10 @@ beforeAll(async () => {
   });
   if (!findUser) {
     const response = await request.post("/user").send(userexample);
-    token = response.body.token;
+    token = response.body.payload.token;
   } else {
     const response = await request.post("/user/login").send(userexample);
-    token = response.body.token;
+    token = response.body.payload.token;
   }
 });
 afterAll(async () => {
@@ -51,7 +51,7 @@ describe("Post Payment", () => {
         paymentDate: "",
       });
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe("fields empty");
+    expect(response.body.message).toBe("fields empty");
   });
   test("Should return error if invalid token", async () => {
     const response = await request
@@ -81,7 +81,7 @@ describe("Update Payment", () => {
         addressee: "Testing",
         paymentDate: "2024-01-01",
       });
-    paymentId = response.body.id;
+    paymentId = response.body.payload.id;
   });
 
   afterAll(async () => {
@@ -113,7 +113,7 @@ describe("Update Payment", () => {
       });
 
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe("fields missing");
+    expect(response.body.message).toBe("fields missing");
   });
 
   test("Should return error if no payment id", async () => {
@@ -139,8 +139,9 @@ describe("Update Payment", () => {
         paymentDate: "2024-01-01",
       });
 
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe("do not find a payment with that id");
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe(true);
+    expect(response.body.message).toBe("do not find a payment with that id");
   });
 
   test("Should return error if invalid token", async () => {
@@ -171,7 +172,7 @@ describe("Delete Payment", () => {
         addressee: "Testing",
         paymentDate: "2024-01-01",
       });
-    paymentId = response.body.id;
+    paymentId = response.body.payload.id;
   });
 
   test("Should return error if no payment id", async () => {
@@ -211,7 +212,7 @@ describe("Get Payment By Id", () => {
         addressee: "Testing",
         paymentDate: "2024-01-01",
       });
-    paymentId = response.body.id;
+    paymentId = response.body.payload.id;
   });
 
   afterAll(async () => {
